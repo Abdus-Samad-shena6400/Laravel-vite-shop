@@ -1,0 +1,28 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@heroicons/vue": "^1.0.6",
+    "axios": "^1.18.1",
+    "vue": "^3.5.38",
+    "vue-router": "^4.0.13",
+    "vue-toastification": "^2.0.0-rc.5",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@headlessui/vue": "^1.7.23",
+    "@tailwindcss/forms": "^0.5.11",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "autoprefixer": "^10.5.1",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19",
+    "vite": "^8.1.0"
+  }
+}
