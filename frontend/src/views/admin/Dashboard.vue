@@ -239,7 +239,7 @@ import {
     CategoryScale,
     Tooltip,
     Legend
-} from 'chart.js'
+} from 'chart.js/auto'
 
 Chart.register(
     LineController,
