@@ -122,21 +122,19 @@ const submitForm = async () => {
 
   try {
 
-    await axiosClient.post('/store/contact', form)
-
+    await axiosClient.post('/contact', form)
+    
     showToast('Message sent successfully.')
 
-   form.value = {
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-}
+    form.name = ''
+    form.email = ''
+    form.subject = ''
+    form.message = ''
 
   } catch (error) {
 
-    
-showToast('Failed to send message.', 'error')
+    console.error('Contact form error:', error)
+    showToast('Failed to send message. Please try again.', 'error')
 
   } finally {
 
