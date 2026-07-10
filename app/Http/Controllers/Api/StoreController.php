@@ -54,6 +54,15 @@ class StoreController extends Controller
     $products->getCollection()->transform(function ($product) {
         $product->price = $product->sale_price ?? $product->regular_price;
         
+        // Check for active hot deal
+        $hotDeal = $product->hotDeal()->first();
+        
+        if ($hotDeal) {
+            $product->hot_deal = $hotDeal;
+            $product->deal_price = $hotDeal->deal_price;
+            $product->discount_percentage = $hotDeal->discount_percentage;
+        }
+        
         // Add average rating and review count
         $reviews = $product->reviews()->where('status', true)->get();
         $product->average_rating = $reviews->isEmpty() ? 0 : $reviews->avg('rating');
@@ -82,6 +91,22 @@ public function product($id)
 
     $product->price = $product->sale_price ?? $product->regular_price;
 
+    // Check for visible hot deal
+    $hotDeal = \App\Models\HotDeal::with('product')
+        ->where('product_id', $product->id)
+        ->visibleForStorefront()
+        ->first();
+
+    if ($hotDeal) {
+        $product->hot_deal = $hotDeal;
+        $product->deal_price = $hotDeal->deal_price;
+        $product->discount_percentage = $hotDeal->discount_percentage;
+    } else {
+        $product->hot_deal = null;
+        $product->deal_price = null;
+        $product->discount_percentage = null;
+    }
+
     $relatedProducts = Product::with(['category', 'brand'])
         ->where('status', 1)
         ->where('category_id', $product->category_id)
@@ -92,6 +117,16 @@ public function product($id)
 
     $relatedProducts->transform(function ($p) {
         $p->price = $p->sale_price ?? $p->regular_price;
+        
+        // Check for hot deal on related products
+        $relatedHotDeal = $p->hotDeal()->first();
+        
+        if ($relatedHotDeal) {
+            $p->hot_deal = $relatedHotDeal;
+            $p->deal_price = $relatedHotDeal->deal_price;
+            $p->discount_percentage = $relatedHotDeal->discount_percentage;
+        }
+        
         return $p;
     });
 
@@ -118,4 +153,6 @@ public function product($id)
                 ->get()
         );
     }
+
+    
 }

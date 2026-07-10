@@ -3,9 +3,9 @@
     <!-- Shared Public Header -->
     <PublicHeader />
 
-    <!-- Hero Section -->
-    <Hero />
-
+    
+    
+    <HotDealBanner/>
     <!-- Categories Section -->
     <CategoriesSection />
     <!-- Brands Section -->
@@ -32,7 +32,7 @@
     </footer>
     <transition enter-active-class="transition duration-300" leave-active-class="transition duration-300"
       enter-from-class="opacity-0 translate-y-4" leave-to-class="opacity-0 translate-y-4">
-      <div v-if="toast.show" class="fixed top-5 right-5 z-50">
+      <div v-if="toast.show" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50">
         <div class="px-6 py-4 rounded-lg shadow-xl text-white" :class="toast.type === 'success'
           ? 'bg-green-600'
           : 'bg-red-600'">
@@ -47,7 +47,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import PublicHeader from '../../components/admin/PublicHeader.vue'
-import Hero from '../../components/home/Hero.vue'
+
 import CategoriesSection from '../../components/home/CategoriesSection.vue'
 import axiosClient from '../../axios'
 import FeaturedProducts from '../../components/home/FeaturedProducts.vue'
@@ -55,6 +55,8 @@ import LatestProducts from '../../components/home/LatestProducts.vue'
 import BrandsSection from '../../components/home/BrandsSection.vue'
 import WhyChooseUs from '../../components/home/WhyChooseUs.vue'
 import Newsletter from '../../components/home/Newsletter.vue'
+import HotDeal from '../admin/HotDeal.vue'
+import HotDealBanner from '@/components/home/HotDealBanner.vue'
 const store = useStore()
 
 const toast = ref({
@@ -62,6 +64,8 @@ const toast = ref({
     message: '',
     type: 'success'
 })
+
+const loading = ref(false)
 
 const showToast = (message, type = 'success') => {
     toast.value = {
@@ -92,6 +96,8 @@ const isInWishlist = (id) => store.getters.isInWishlist(id)
 
 // Dispatch store actions
 const addToCart = async (product) => {
+    if (loading.value) return
+    loading.value = true
     try {
         await store.dispatch('addToCart', {
             productId: product.id,
@@ -106,6 +112,8 @@ const addToCart = async (product) => {
             'Unable to add product to cart.',
             'error'
         )
+    } finally {
+        loading.value = false
     }
 }
 const toggleWishlist = async (product) => {

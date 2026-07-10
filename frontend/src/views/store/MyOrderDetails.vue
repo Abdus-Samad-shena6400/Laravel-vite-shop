@@ -259,6 +259,13 @@
                     </button>
                 </div>
 
+                <router-link
+                    :to="{ name: 'invoice', params: { id: order.id } }"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg"
+                >
+                    Download Invoice
+                </router-link>
+
             </div>
 
         </div>
@@ -267,7 +274,7 @@
 
     <transition enter-active-class="transition duration-300" leave-active-class="transition duration-300"
         enter-from-class="opacity-0 translate-y-4" leave-to-class="opacity-0 translate-y-4">
-        <div v-if="toast.show" class="fixed top-5 right-5 z-50">
+        <div v-if="toast.show" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50">
             <div class="px-6 py-4 rounded-lg shadow-xl text-white" :class="toast.type === 'success'
                 ? 'bg-green-600'
                 : 'bg-red-600'">

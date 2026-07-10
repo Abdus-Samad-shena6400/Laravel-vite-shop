@@ -38,7 +38,7 @@
                 </div>
 
                 <router-link :to="{ name: 'orders' }"
-                    class="bg-gray-700 hover:bg-gray-800 text-white px-5 py-2 rounded-lg">
+                    class="bg-blue-700 hover:bg-gray-800 text-white px-5 py-2 rounded-lg">
                     Back
                 </router-link>
 
@@ -110,6 +110,17 @@
                             </span>
 
                         </p>
+                        <button v-if="
+                            order.payment_method === 'bank_transfer' &&
+                            order.payment_status === 'pending'
+                        " @click="markAsPaid" class="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            Mark as Paid
+                        </button>
+
+                        <div v-if="order.transaction_id">
+                            <strong>Transaction ID:</strong>
+                            {{ order.transaction_id }}
+                        </div>
 
                         <p>
 
@@ -370,7 +381,7 @@
         </div>
         <transition enter-active-class="transition duration-300" leave-active-class="transition duration-300"
             enter-from-class="opacity-0 translate-y-4" leave-to-class="opacity-0 translate-y-4">
-            <div v-if="toast.show" class="fixed top-5 right-5 z-50">
+            <div v-if="toast.show" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50">
                 <div class="px-6 py-4 rounded-lg shadow-xl text-white" :class="toast.type === 'success'
                     ? 'bg-green-600'
                     : 'bg-red-600'">
@@ -496,6 +507,7 @@ const updatePaymentStatus = async () => {
             `/orders/${order.value.id}/payment-status`,
 
             {
+                
 
                 payment_status: selectedPaymentStatus.value
 
@@ -557,6 +569,25 @@ const orderStatusClass = (status) => {
 
         default:
             return 'bg-yellow-100 text-yellow-700'
+    }
+}
+
+const markAsPaid = async () => {
+    paymentUpdating.value = true
+    try {
+        await axiosClient.patch(
+            `/orders/${order.value.id}/payment-status`,
+            {
+                payment_status: 'paid'
+            }
+        )
+        order.value.payment_status = 'paid'
+        showToast('Payment status updated successfully.')
+    } catch (error) {
+        console.error(error)
+        showToast('Failed to update payment status.', 'error')
+    } finally {
+        paymentUpdating.value = false
     }
 }
 

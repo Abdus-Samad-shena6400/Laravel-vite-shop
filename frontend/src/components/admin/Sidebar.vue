@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[200px] bg-gray-900 text-gray-300 flex flex-col transition-all duration-300 shadow-xl border-r border-gray-800">
+  <div class="w-full h-full bg-gray-900 text-gray-300 flex flex-col transition-all duration-300 shadow-xl border-r border-gray-800">
     <!-- Brand / Header -->
     <div class="h-16 flex items-center px-4 bg-gray-950 font-semibold text-white tracking-wider border-b border-gray-800">
       <span class="text-indigo-400 mr-2 text-xl font-black">🛍️</span>
@@ -123,6 +123,10 @@ const navigation = [
     to: { name: 'dashboard' }
   },
 
+  
+   
+
+
   {
     name: 'Category',
     icon: CollectionIcon,
@@ -170,7 +174,30 @@ const navigation = [
    {
     name: 'Coupons',
     icon: TagIcon,
-    to: { name: 'coupons' }
+    children: [
+      {
+        name: 'All Coupons',
+        to: { name: 'coupons' }
+      },
+      {
+        name: 'Add Coupon',
+        to: { name: 'coupon.create' }
+      }
+    ]
+  },
+   {
+    name: 'Hot Deals',
+    icon: TagIcon,
+    children: [
+      {
+        name: 'All Hot Deals',
+        to: { name: 'hot-deals' }
+      },
+      {
+        name: 'Create Hot Deal',
+        to: { name: 'hot-deal.create' }
+      }
+    ]
   },
 
   {

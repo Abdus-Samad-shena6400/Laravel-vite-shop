@@ -27,6 +27,16 @@
                         placeholder="SAVE20">
                 </div>
 
+                <!-- Coupon Name -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2">
+                        Coupon Name
+                    </label>
+
+                    <input type="text" v-model="form.name" class="w-full border rounded-lg px-4 py-3"
+                        placeholder="Summer Sale Discount">
+                </div>
+
                 <!-- Coupon Type -->
                 <div class="mb-6">
                     <label class="block text-sm font-semibold mb-2">
@@ -146,7 +156,7 @@
     <transition enter-active-class="transition duration-300" leave-active-class="transition duration-300"
         enter-from-class="opacity-0 translate-y-4" leave-to-class="opacity-0 translate-y-4">
 
-        <div v-if="toast.show" class="fixed top-5 right-5 z-50">
+        <div v-if="toast.show" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50">
 
             <div class="px-6 py-4 rounded-lg shadow-xl text-white" :class="toast.type === 'success'
                 ? 'bg-green-600'
@@ -171,6 +181,7 @@ const router = useRouter()
 
 const form = ref({
     code: '',
+    name: '',
     type: 'fixed',
     value: '',
     minimum_amount: '',
@@ -213,6 +224,8 @@ const saveCoupon = async () => {
         await axiosClient.post('/coupons', {
 
             code: form.value.code,
+
+            name: form.value.name,
 
             type: form.value.type,
 

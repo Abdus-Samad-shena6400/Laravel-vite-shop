@@ -1,6 +1,6 @@
 <template>
 
-    <div class="bg-white rounded-2xl shadow p-6">
+    <div class="bg-white rounded-2xl shadow p-4 sm:p-6 lg:sticky lg:top-24">
 
         <h2 class="text-xl font-bold mb-6">
 

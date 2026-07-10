@@ -83,7 +83,8 @@
 
             </div>
 
-            <table class="w-full">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[720px]">
 
                 <thead class="bg-gray-50">
 
@@ -162,6 +163,7 @@
                 </tbody>
 
             </table>
+            </div>
 
         </div>
 

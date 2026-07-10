@@ -1,19 +1,19 @@
 <template>
-    <div class="p-6">
+    <div class="p-4 sm:p-6">
 
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
 
-            <h1 class="text-3xl font-bold">
+            <h1 class="text-2xl sm:text-3xl font-bold">
 
                 Orders
 
             </h1>
 
-            <div class="flex gap-3">
+            <div class="flex flex-col gap-3 w-full sm:w-auto sm:flex-row">
 
-                <input v-model="search" @input="getOrders" placeholder="Search..." class="border rounded-lg px-4 py-2">
+                <input v-model="search" @input="getOrders" placeholder="Search..." class="w-full sm:w-48 border rounded-lg px-4 py-2">
 
-                <select v-model="status" @change="getOrders" class="border rounded-lg px-4 py-2">
+                <select v-model="status" @change="getOrders" class="w-full sm:w-auto border rounded-lg px-4 py-2">
 
                     <option value="">
 
@@ -65,7 +65,8 @@
 
         <div class="bg-white rounded-xl shadow overflow-hidden">
 
-            <table class="w-full">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[900px]">
 
                 <thead class="bg-gray-100">
 
@@ -131,12 +132,12 @@
 
                         <td class="p-4 text-center">
 
-                            <div class="flex gap-2 justify-center">
-                                <router-link :to="`/orders/${order.id}`" class="bg-indigo-600 text-white px-4 py-2 rounded">
+                            <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                                <router-link :to="`/orders/${order.id}`" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm">
                                     View
                                 </router-link>
                                 <button @click="confirmDelete(order)" :disabled="deleting"
-                                    class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded">
+                                    class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm">
                                     {{ deleting ? 'Deleting...' : 'Delete' }}
                                 </button>
                             </div>
@@ -158,10 +159,11 @@
                 </tbody>
 
             </table>
+            </div>
 
 
         </div>
-        <div class="flex justify-end mt-6 gap-2">
+        <div class="flex flex-wrap justify-end mt-6 gap-2">
 
             <button @click="getOrders(pagination.current_page - 1)" :disabled="!pagination.prev_page_url"
                 class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
@@ -180,7 +182,7 @@
         </div>
         <!-- Delete Modal -->
         <div v-if="showDeleteModal" class="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div class="bg-white rounded-xl shadow-xl w-[420px] p-6">
+            <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
                 <h2 class="text-2xl font-bold mb-4">
                     Delete Order
                 </h2>
@@ -210,7 +212,7 @@
     >
         <div
             v-if="toast.show"
-            class="fixed top-5 right-5 z-50"
+            class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50"
         >
             <div
                 class="px-6 py-4 rounded-lg shadow-xl text-white"

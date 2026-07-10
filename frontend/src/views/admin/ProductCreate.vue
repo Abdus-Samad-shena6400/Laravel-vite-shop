@@ -29,10 +29,10 @@
         <div v-else class="bg-white rounded-xl shadow p-6">
             <form @submit.prevent="submitForm">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                     <!-- Product Name -->
-                    <div class="md:col-span-2">
+                    <div class="lg:col-span-2">
 
                         <label class="block font-medium mb-2">
                             Product Name
@@ -99,7 +99,7 @@
 
                     <!-- Short Description -->
 
-                    <div class="md:col-span-2">
+                    <div class="lg:col-span-2">
 
                         <label class="block font-medium mb-2">
                             Short Description
@@ -116,7 +116,7 @@
 
                     <!-- Description -->
 
-                    <div class="md:col-span-2">
+                    <div class="lg:col-span-2">
 
                         <label class="block font-medium mb-2">
                             Description
@@ -129,7 +129,7 @@
                     </div>
 
                 </div>
-                <div class="md:col-span-2">
+                <div class="lg:col-span-2">
 
                     <label class="block font-medium mb-2">
                         Featured Image
@@ -142,7 +142,7 @@
                 </div>
 
                 <!-- Gallery Images -->
-                <div class="md:col-span-2 mt-6">
+                <div class="lg:col-span-2 mt-6">
 
                     <label class="block font-medium mb-2">
                         Gallery Images
@@ -150,7 +150,7 @@
 
                     <input type="file" accept="image/*" multiple @change="handleGalleryImages">
 
-                    <div v-if="galleryImages.length > 0" class="mt-4 grid grid-cols-4 gap-4">
+                    <div v-if="galleryImages.length > 0" class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
                         <div v-for="(image, index) in galleryImages" :key="index" class="relative">
                             <img :src="image.preview" class="w-full h-32 object-cover rounded-lg border">
                             <button type="button" @click="removeGalleryImage(index)"
@@ -164,7 +164,7 @@
 
                 <!-- Pricing & Inventory -->
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
 
                     <!-- Regular Price -->
 
@@ -261,7 +261,7 @@
 
                 <!-- Buttons -->
 
-                <div class="flex justify-end gap-3 mt-8">
+                <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
 
                     <router-link :to="{ name: 'products' }" class="px-6 py-3 border rounded-lg">
                         Cancel
@@ -290,7 +290,7 @@
     >
         <div
             v-if="toast.show"
-            class="fixed top-5 right-5 z-50"
+            class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50"
         >
             <div
                 class="px-6 py-4 rounded-lg shadow-xl text-white"

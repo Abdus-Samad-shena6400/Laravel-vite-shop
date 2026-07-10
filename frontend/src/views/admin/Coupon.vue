@@ -1,10 +1,10 @@
 <template>
-    <div class="p-6">
+    <div class="p-4 sm:p-6">
 
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
                     Coupons
                 </h1>
                 <p class="text-gray-500 mt-1">
@@ -12,8 +12,8 @@
                 </p>
             </div>
 
-            <router-link :to="{ name: 'couponCreate' }"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-lg font-medium">
+            <router-link :to="{ name: 'coupon.create' }"
+                class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-lg font-medium text-center">
                 + Add Coupon
             </router-link>
         </div>
@@ -44,7 +44,8 @@
 
         <div v-else class="bg-white rounded-xl shadow overflow-hidden">
 
-            <table class="w-full">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[720px]">
 
                 <thead class="bg-gray-100 text-gray-700">
 
@@ -58,9 +59,9 @@
                             Name
                         </th>
 
-                        <th class="text-left p-4">
-                            Slug
-                        </th>
+                        
+
+                       
 
                         <th class="text-left p-4">
                             Status
@@ -98,15 +99,15 @@
 
                         <td class="p-4">
 
-                            <div class="flex justify-center gap-2">
+                            <div class="flex flex-col sm:flex-row justify-center gap-2">
 
                                 <router-link :to="{ name: 'coupon.edit', params: { id: coupon.id } }"
-                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm text-center">
                                     Edit
                                 </router-link>
 
                                 <button @click="confirmDelete(coupon)" :disabled="deleting"
-                                    class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-5 py-2 rounded">
+                                    class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-5 py-2 rounded text-sm">
                                     {{ deleting ? 'Deleting...' : 'Delete' }}
                                 </button>
                             </div>
@@ -118,16 +119,17 @@
                 </tbody>
 
             </table>
+            </div>
 
         </div>
 
         <!-- Pagination -->
         <div v-if="!loading && coupons.length > 0" class="bg-white rounded-xl shadow p-4 mt-6">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="text-gray-600">
                     Showing {{ (currentPage - 1) * 4 + 1 }} to {{ Math.min(currentPage * 4, total) }} of {{ total }} coupons
                 </div>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <button
                         @click="currentPage--; getCoupons()"
                         :disabled="currentPage === 1"
@@ -145,7 +147,7 @@
         </div>
         <!-- Delete Modal -->
         <div v-if="showDeleteModal" class="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div class="bg-white rounded-xl shadow-xl w-[420px] p-6">
+            <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
                 <h2 class="text-2xl font-bold mb-4">
                     Delete Coupon
                 </h2>
@@ -176,7 +178,7 @@
 >
     <div
         v-if="toast.show"
-        class="fixed top-5 right-5 z-50"
+        class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50"
     >
         <div
             class="px-6 py-4 rounded-lg shadow-xl text-white"

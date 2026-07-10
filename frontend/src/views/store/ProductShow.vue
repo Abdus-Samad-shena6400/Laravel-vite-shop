@@ -3,14 +3,32 @@
 
         <LoadingSpinner v-if="loading" />
 
-        <div v-else-if="product" class="grid lg:grid-cols-2 gap-12">
+        <div v-else-if="error" class="text-center py-20">
+            <div class="text-6xl mb-4">😕</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Product Not Found</h2>
+            <p class="text-gray-600 mb-6">{{ error }}</p>
+            <router-link to="/shop" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg">
+                Back to Shop
+            </router-link>
+        </div>
+
+        <div v-else-if="product" class="grid gap-8 lg:grid-cols-2 lg:gap-12">
 
             <!-- Product Image -->
 
             <div>
+                <img :src="selectedImage" :alt="product.name"
+                    class="w-full rounded-2xl shadow-lg mb-4" />
 
-                <img :src="`http://localhost:8000/storage/${product.featured_image}`" :alt="product.name"
-                    class="w-full rounded-2xl shadow-lg" />
+                <!-- Gallery Thumbnails -->
+                <div v-if="allImages.length > 0" class="grid grid-cols-4 gap-2">
+                    <img v-for="(image, index) in allImages" :key="index"
+                        :src="image.url"
+                        :alt="product.name"
+                        @click="selectedImage = image.url"
+                        class="w-full h-20 object-contain rounded-lg cursor-pointer hover:opacity-80 transition"
+                        :class="{ 'ring-2 ring-indigo-600': selectedImage === image.url }" />
+                </div>
 
             </div>
 
@@ -18,7 +36,7 @@
 
             <div>
 
-                <h1 class="text-4xl font-bold">
+                <h1 class="text-3xl sm:text-4xl font-bold">
 
                     {{ product.name }}
 
@@ -36,11 +54,25 @@
 
                 <div class="mt-6">
 
-                    <span class="text-4xl font-bold text-indigo-600">
-
-                        ${{ product.price }}
-
-                    </span>
+                    <div v-if="product.hot_deal && product.deal_price" class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span class="text-3xl sm:text-4xl font-bold text-red-600">
+                            ${{ product.deal_price }}
+                        </span>
+                        <span class="text-xl sm:text-2xl text-gray-400 line-through">
+                            ${{ product.price }}
+                        </span>
+                        <div class="mt-2">
+                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">
+                                {{ product.discount_percentage }}% OFF
+                            </span>
+                            <span class="text-sm text-gray-500 ml-2">Hot Deal</span>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <span class="text-3xl sm:text-4xl font-bold text-indigo-600">
+                            ${{ product.price }}
+                        </span>
+                    </div>
 
                 </div>
 
@@ -108,19 +140,19 @@
 
                 <!-- Buttons -->
 
-                <div class="flex gap-4 mt-10">
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-10">
 
-                    <button @click="addToCart" :disabled="product.quantity <= 0"
-                        class="px-8 py-3 rounded-xl text-white transition" :class="product.quantity > 0
+                    <button @click="addToCart" :disabled="product.quantity <= 0 || cartLoading"
+                        class="w-full sm:w-auto px-8 py-3 rounded-xl text-white transition" :class="product.quantity > 0 && !cartLoading
                             ? 'bg-indigo-600 hover:bg-indigo-700'
                             : 'bg-gray-400 cursor-not-allowed'">
 
-                        {{ product.quantity > 0 ? 'Add to Cart' : 'Out of Stock' }}
+                        {{ cartLoading ? 'Adding...' : (product.quantity > 0 ? 'Add to Cart' : 'Out of Stock') }}
 
                     </button>
                    
 
-                    <button @click="toggleWishlist" class="border px-8 py-3 rounded-xl hover:bg-gray-100">
+                    <button @click="toggleWishlist" class="w-full sm:w-auto border px-8 py-3 rounded-xl hover:bg-gray-100">
 
                         <span v-if="isInWishlist(product.id)" class="text-rose-500">❤️</span>
                         <span v-else class="text-gray-400">🤍</span>
@@ -166,7 +198,7 @@
     </div>
     <transition enter-active-class="transition duration-300" leave-active-class="transition duration-300"
       enter-from-class="opacity-0 translate-y-4" leave-to-class="opacity-0 translate-y-4">
-      <div v-if="toast.show" class="fixed top-5 right-5 z-50">
+      <div v-if="toast.show" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50">
         <div class="px-6 py-4 rounded-lg shadow-xl text-white" :class="toast.type === 'success'
           ? 'bg-green-600'
           : 'bg-red-600'">
@@ -178,7 +210,7 @@
 
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import axiosClient from '../../axios'
@@ -211,8 +243,31 @@ const showToast = (message, type = 'success') => {
 }
 
 const loading = ref(true)
+const cartLoading = ref(false)
+
+const error = ref('')
 
 const product = ref(null)
+
+const selectedImage = ref('')
+
+const allImages = computed(() => {
+    if (!product.value) return []
+    const images = []
+    if (product.value.featured_image) {
+        images.push({
+            url: `http://localhost:8000/storage/${product.value.featured_image}`
+        })
+    }
+    if (product.value.images && product.value.images.length > 0) {
+        product.value.images.forEach(img => {
+            images.push({
+                url: `http://localhost:8000/storage/${img.image}`
+            })
+        })
+    }
+    return images
+})
 
 const relatedProducts = ref([])
 
@@ -230,10 +285,21 @@ const loadProduct = async () => {
 
         product.value = data.product
 
+        selectedImage.value = data.product.featured_image 
+            ? `http://localhost:8000/storage/${data.product.featured_image}`
+            : (data.product.images?.[0]?.image ? `http://localhost:8000/storage/${data.product.images[0].image}` : '')
+
         relatedProducts.value = data.related_products
 
         await loadReviews()
 
+    } catch (error) {
+        console.error('Failed to load product:', error)
+        if (error.response?.status === 404) {
+            error.value = 'The product you are looking for does not exist or is not available.'
+        } else {
+            error.value = 'Failed to load product. Please try again later.'
+        }
     }
 
     finally {
@@ -275,6 +341,8 @@ const decrease = () => {
 }
 
 const addToCart = async () => {
+    if (cartLoading.value) return
+    cartLoading.value = true
     try {
         await store.dispatch('addToCart', {
             productId: product.value.id,
@@ -283,12 +351,10 @@ const addToCart = async () => {
         showToast('Product added to cart successfully.')
     } catch (error) {
         console.error(error)
-        showToast(
-            error.message ||
-            error.response?.data?.message ||
-            'Unable to add product to cart.',
-            'error'
-        )
+        const errorMessage = error.message || error.response?.data?.message || 'Unable to add product to cart.'
+        showToast(errorMessage, 'error')
+    } finally {
+        cartLoading.value = false
     }
 }
 
@@ -308,10 +374,8 @@ const toggleWishlist = async () => {
 }
 
 onMounted(loadProduct)
-onMounted(() => {
-    if (store.getters.userToken) {
-        store.dispatch('loadCart')
-        store.dispatch('loadWishlist')
-    }
+
+watch(() => route.params.id, () => {
+    loadProduct()
 })
 </script>

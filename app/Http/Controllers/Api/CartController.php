@@ -19,6 +19,28 @@ class CartController extends Controller
             ->latest()
             ->get();
 
+        // Add hot deal information to each cart item
+        $cart->transform(function ($cartItem) {
+            $product = $cartItem->product;
+            
+            // Check for active hot deal
+            $hotDeal = \App\Models\HotDeal::where('product_id', $product->id)
+                ->visibleForStorefront()
+                ->first();
+            
+            if ($hotDeal) {
+                $product->hot_deal = $hotDeal;
+                $product->deal_price = $hotDeal->deal_price;
+                $product->discount_percentage = $hotDeal->discount_percentage;
+            }
+            
+            // Set display price using the configured current price
+            $product->price = $product->current_price;
+            $product->stock = $product->quantity;
+            
+            return $cartItem;
+        });
+
         return response()->json($cart);
     }
 

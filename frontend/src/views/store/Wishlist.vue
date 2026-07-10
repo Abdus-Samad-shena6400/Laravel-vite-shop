@@ -31,19 +31,19 @@
         >
           <div class="relative h-48 bg-gray-50 overflow-hidden">
             <img 
-              :src="item.product.image_url || 'https://via.placeholder.com/300?text=No+Image'" 
-              :alt="item.product.name" 
+              :src="item.product?.image_url || 'https://via.placeholder.com/300?text=No+Image'" 
+              :alt="item.product?.name || 'Product'" 
               class="w-full h-full object-contain bg-gray-50"
             />
           </div>
           <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
             <div>
-              <span class="text-xs font-semibold text-indigo-600 tracking-wider uppercase">{{ item.product.category_name }}</span>
-              <h3 class="text-sm font-bold text-gray-950 mt-1 line-clamp-2">{{ item.product.name }}</h3>
+              <span class="text-xs font-semibold text-indigo-600 tracking-wider uppercase">{{ item.product?.category_name || '' }}</span>
+              <h3 class="text-sm font-bold text-gray-950 mt-1 line-clamp-2">{{ item.product?.name || 'Product' }}</h3>
             </div>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-lg font-black text-gray-900">${{ item.product.price }}</span>
+                <span class="text-lg font-black text-gray-900">${{ item.product?.price || '0.00' }}</span>
               </div>
               <div class="flex space-x-2 pt-2 border-t border-gray-100">
                 <!-- Move to Cart -->
@@ -70,7 +70,7 @@
     </div>
     <transition enter-active-class="transition duration-300" leave-active-class="transition duration-300"
       enter-from-class="opacity-0 translate-y-4" leave-to-class="opacity-0 translate-y-4">
-      <div v-if="toast.show" class="fixed top-5 right-5 z-50">
+      <div v-if="toast.show" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50">
         <div class="px-6 py-4 rounded-lg shadow-xl text-white" :class="toast.type === 'success'
           ? 'bg-green-600'
           : 'bg-red-600'">
@@ -105,20 +105,52 @@ const showToast = (message, type = 'success') => {
     }, 3000)
 }
 
-onMounted(() => {
+onMounted(async () => {
     if (store.getters.userToken) {
         store.dispatch('loadWishlist')
+    } else {
+        // Load products to map local wishlist IDs to product objects
+        if (store.getters.allProducts.length === 0) {
+            await store.dispatch('fetchProducts')
+        }
     }
 })
 
-const wishlistItems = computed(() => store.getters.wishlistItems)
+const wishlistItems = computed(() => {
+    const items = store.getters.wishlistItems
+    const products = store.getters.allProducts
+    
+    // If user is authenticated, return wishlist items as-is
+    if (store.getters.userToken) {
+        return items
+    }
+    
+    // If user is not authenticated, map local wishlist IDs to product objects
+    return items.map(item => {
+        const product = products.find(p => p.id === item.id)
+        return product ? { id: item.id, product } : null
+    }).filter(Boolean)
+})
+
 const isInWishlist = computed(() => (productId) => {
     return store.getters.wishlistItems.some(
-        item => item.product.id === productId
+        item => item.product?.id === productId || item.id === productId
     )
 })
 
 const remove = async (wishlistId) => {
+    // If user is not authenticated, use local wishlist removal
+    if (!store.getters.userToken) {
+        try {
+            store.commit('REMOVE_FROM_LOCAL_WISHLIST', wishlistId)
+            showToast('Item removed from wishlist successfully.')
+        } catch (error) {
+            console.error(error)
+            showToast('Unable to remove item from wishlist.', 'error')
+        }
+        return
+    }
+    
     try {
         const response = await store.dispatch('removeFromWishlist', wishlistId)
         showToast(response.message || 'Item removed from wishlist successfully.')
@@ -133,18 +165,24 @@ const remove = async (wishlistId) => {
 }
 
 const moveToCart = async (item) => {
+    // If user is not authenticated, show sign-in prompt
+    if (!store.getters.userToken) {
+        showToast('Please sign in to add items to your cart.', 'error')
+        return
+    }
+    
     try {
-        const cartResponse = await store.dispatch('addToCart', {
+        const response = await store.dispatch('moveToCartFromWishlist', {
             productId: item.product.id,
+            wishlistId: item.id,
             quantity: 1
         })
-        showToast(cartResponse.message || 'Product added to cart successfully.')
-
-        const wishlistResponse = await store.dispatch('removeFromWishlist', item.id)
+        showToast(response.message || 'Product moved to cart successfully.')
     } catch (error) {
         console.error(error)
         showToast(
             error.response?.data?.message ||
+            error.message ||
             'Unable to move item to cart.',
             'error'
         )

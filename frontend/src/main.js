@@ -8,7 +8,7 @@ import 'vue-toastification/dist/index.css'
 
 const toastOptions = {
   timeout: 3000,
-  position: 'top-right',
+  position: 'top-center',
   closeOnClick: true,
   pauseOnHover: true,
   draggable: true,

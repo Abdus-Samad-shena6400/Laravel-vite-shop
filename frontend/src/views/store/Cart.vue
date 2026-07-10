@@ -2,68 +2,63 @@
   <div class="bg-gray-50 min-h-screen flex flex-col">
     <PublicHeader />
 
-    <div class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full animate-fade-in">
-      <h1 class="text-3xl font-extrabold text-gray-950 tracking-tight mb-8">Shopping Cart</h1>
+    <div class="grow container-standard section-padding w-full animate-fade-in">
+      <h1 class="text-heading">Shopping Cart</h1>
 
       <div v-if="cartItems.length === 0"
-        class="text-center py-24 bg-white rounded-3xl border border-gray-150 shadow-sm space-y-6">
-        <svg class="h-20 w-20 text-gray-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        class="text-center py-16 sm:py-20 lg:py-24 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-4 sm:space-y-6">
+        <svg class="h-16 w-16 sm:h-20 sm:w-20 text-gray-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
             d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
         <div class="space-y-2">
-          <h2 class="text-xl font-bold text-gray-950">Your cart is empty</h2>
-          <p class="text-sm text-gray-500 max-w-xs mx-auto">Fill it with high-quality tech, premium clothing, and modern
-            housewares!</p>
+          <h2 class="text-lg sm:text-xl font-bold text-gray-900">Your cart is empty</h2>
+          <p class="text-xs sm:text-sm text-gray-500 max-w-xs mx-auto">Fill it with high-quality tech, premium clothing, and modern housewares!</p>
         </div>
         <div>
-          <router-link :to="{ name: 'shop' }"
-            class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-colors">
+          <router-link :to="{ name: 'shop' }" class="btn-primary px-4 py-2 sm:px-6 sm:py-3 text-sm">
             Continue Shopping
           </router-link>
         </div>
       </div>
 
-      <div v-else class="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+      <div v-else class="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
         <!-- Cart Items List -->
-        <section class="lg:col-span-8 space-y-4">
+        <section class="lg:col-span-8 space-y-3 sm:space-y-4">
           <div v-for="item in cartItems" :key="item.id"
-            class="bg-white p-6 rounded-2xl border border-gray-150 shadow-xs flex items-center space-x-6 hover:shadow-sm transition-all">
+            class="card p-4 sm:p-6 flex items-center space-x-4 sm:space-x-6">
             <img :src="item.product.image_url || 'https://via.placeholder.com/100?text=No+Image'"
-              :alt="item.product.name" class="w-20 h-20 rounded-xl object-contain bg-gray-50">
-            <div class="flex-grow flex flex-col sm:flex-row sm:justify-between space-y-4 sm:space-y-0">
+              :alt="item.product.name" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-contain bg-gray-50">
+            <div class="flex-grow flex flex-col sm:flex-row sm:justify-between space-y-3 sm:space-y-0">
               <div class="space-y-1">
-                <h3 class="text-sm font-bold text-gray-950">{{ item.product.name }}</h3>
+                <h3 class="text-sm font-bold text-gray-900">{{ item.product.name }}</h3>
                 <p class="text-xs text-gray-400">{{ item.product.category_name }}</p>
-                <p class="text-sm font-extrabold text-indigo-600 mt-2">${{ item.product.price }}</p>
-                <p v-if="item.product.quantity > 0" class="text-green-600 text-xs font-semibold mt-1">
-
-                  In Stock ({{ item.product.quantity }})
-
+                <div v-if="item.product.hot_deal && item.product.deal_price">
+                  <p class="text-sm font-extrabold text-red-600 mt-2">${{ item.product.deal_price }}</p>
+                  <p class="text-xs text-gray-400 line-through">${{ item.product.price }}</p>
+                </div>
+                <div v-else>
+                  <p class="text-sm font-extrabold text-indigo-600 mt-2">${{ item.product.price }}</p>
+                </div>
+                <p v-if="(item.product.stock ?? item.product.quantity ?? 0) > 0" class="text-green-600 text-xs font-semibold mt-1">
+                  In Stock ({{ item.product.stock ?? item.product.quantity ?? 0 }})
                 </p>
-
                 <p v-else class="text-red-600 text-xs font-semibold mt-1">
-
                   Out of Stock
-
                 </p>
               </div>
 
-              <div class="flex items-center space-x-6 self-start sm:self-center">
+              <div class="flex items-center space-x-4 sm:space-x-6 self-start sm:self-center">
                 <!-- Quantity controls -->
                 <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-xs">
-                  <button @click="
-                    item.quantity < item.product.stock &&
-                    updateQuantity(item.id, item.quantity + 1)
-                    " class="px-3 py-1.5 hover:bg-gray-50 text-gray-500 font-bold transition-colors">
-                    +
-                  </button>
-                  <span class="px-4 py-1.5 text-sm font-bold text-gray-800">{{ item.quantity }}</span>
-                  <button @click="
-                    item.quantity > 1 &&
-                    updateQuantity(item.id, item.quantity - 1)
-                    " class="px-3 py-1.5 hover:bg-gray-50 text-gray-500 font-bold transition-colors">
+                  <button :disabled="item.quantity <= 1" @click="item.quantity > 1 && updateQuantity(item.id, item.quantity - 1)"
+                    class="px-2 sm:px-3 py-1.5 hover:bg-gray-50 text-gray-500 font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm">
                     -
+                  </button>
+                  <span class="px-3 sm:px-4 py-1.5 text-sm font-bold text-gray-800">{{ item.quantity }}</span>
+                  <button :disabled="item.quantity >= (item.product.stock ?? item.product.quantity ?? 0)" @click="item.quantity < (item.product.stock ?? item.product.quantity ?? 0) && updateQuantity(item.id, item.quantity + 1)"
+                    class="px-2 sm:px-3 py-1.5 hover:bg-gray-50 text-gray-500 font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm">
+                    +
                   </button>
                 </div>
 
@@ -91,52 +86,48 @@
         </section>
 
         <!-- Order Summary Card -->
-        <section
-          class="mt-10 lg:mt-0 lg:col-span-4 bg-white p-6 rounded-2xl border border-gray-150 shadow-xs space-y-6">
+        <section class="mt-6 sm:mt-8 lg:mt-0 lg:col-span-4 card p-4 sm:p-6 space-y-4 sm:space-y-6">
           <p class="text-gray-500 text-sm">
             {{ cartItems.length }} item(s) in your cart
           </p>
-          <h2 class="text-lg font-extrabold text-gray-950">Order Summary</h2>
+          <h2 class="text-lg font-extrabold text-gray-900">Order Summary</h2>
 
           <div class="space-y-4 divide-y divide-gray-100 text-sm">
             <div class="flex justify-between text-gray-600">
               <span>Subtotal</span>
-              <span class="font-semibold text-gray-950">${{ subtotal.toFixed(2) }}</span>
+              <span class="font-semibold text-gray-900">${{ subtotal.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between text-gray-600 pt-4">
               <span>Estimated Shipping</span>
-              <span class="font-semibold text-gray-950">${{ shipping.toFixed(2) }}</span>
+              <span class="font-semibold text-gray-900">${{ shipping.toFixed(2) }}</span>
             </div>
             <div v-if="shipping === 0" class="bg-green-100 text-green-700 rounded-lg p-3 text-sm">
-
-              🎉 Congratulations!
-
-              You qualified for FREE Shipping.
-
+              🎉 Congratulations! You qualified for FREE Shipping.
             </div>
             <div class="flex justify-between text-gray-600 pt-4">
               <span>Estimated Tax (10%)</span>
-              <span class="font-semibold text-gray-950">${{ tax.toFixed(2) }}</span>
+              <span class="font-semibold text-gray-900">${{ tax.toFixed(2) }}</span>
             </div>
-            <div class="flex justify-between text-base font-extrabold text-gray-950 pt-4">
+            <div class="flex justify-between text-base font-extrabold text-gray-900 pt-4">
               <span>Total</span>
               <span class="text-lg font-black text-indigo-600">${{ total.toFixed(2) }}</span>
             </div>
           </div>
 
           <div>
-            <router-link :to="{ name: 'checkout' }"
-              class="block w-full text-center py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
+            <router-link :to="{ name: 'checkout' }" class="btn-primary block w-full text-center py-3 text-sm sm:text-base">
               Proceed to Checkout →
             </router-link>
           </div>
         </section>
       </div>
     </div>
+
+    <!-- Toast Notification -->
     <transition enter-active-class="transition duration-300" leave-active-class="transition duration-300"
       enter-from-class="opacity-0 translate-y-4" leave-to-class="opacity-0 translate-y-4">
-      <div v-if="toast.show" class="fixed top-5 right-5 z-50">
-        <div class="px-6 py-4 rounded-lg shadow-xl text-white" :class="toast.type === 'success'
+      <div v-if="toast.show" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 rounded-lg shadow-xl text-white text-sm" :class="toast.type === 'success'
           ? 'bg-green-600'
           : 'bg-red-600'">
           {{ toast.message }}
@@ -212,12 +203,11 @@ const updateQuantity = async (cartItemId, quantity) => {
 
 const moveToWishlist = async (item) => {
     try {
-        // Add to wishlist first
-        const wishlistResponse = await store.dispatch('addToWishlist', item.product.id)
-        showToast(wishlistResponse.message || 'Item moved to wishlist successfully.')
-
-        // Then remove from cart
-        const cartResponse = await store.dispatch('removeFromCart', item.id)
+        const response = await store.dispatch('moveToWishlistFromCart', {
+            productId: item.product.id,
+            cartItemId: item.id
+        })
+        showToast(response.message || 'Item moved to wishlist successfully.')
     } catch (error) {
         console.error(error)
         showToast(

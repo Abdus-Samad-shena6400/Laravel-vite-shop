@@ -41,9 +41,29 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function hotDeal()
+    {
+        return $this->hasOne(HotDeal::class)
+            ->where('status', true)
+            ->where('end_time', '>', now());
+    }
+
+    public function getCurrentPriceAttribute()
+    {
+        $hotDeal = $this->relationLoaded('hotDeal')
+            ? $this->getRelation('hotDeal')
+            : $this->hotDeal;
+
+        if ($hotDeal) {
+            return (float) ($hotDeal->deal_price ?? ($this->regular_price - (($this->regular_price * $hotDeal->discount_percentage) / 100)));
+        }
+
+        return (float) ($this->sale_price ?? $this->regular_price);
+    }
+
     public function getPriceAttribute()
     {
-        return $this->sale_price ?? $this->regular_price;
+        return $this->current_price;
     }
 
     public function getImageUrlAttribute()

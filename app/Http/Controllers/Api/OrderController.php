@@ -131,21 +131,24 @@ class OrderController extends Controller
     }
 
     public function updatePaymentStatus(Request $request, Order $order)
-    {
-        $validated = $request->validate([
-            'payment_status' => 'required|in:pending,paid,failed',
-        ]);
+{
+    $validated = $request->validate([
+        'payment_status' => 'required|in:pending,paid,failed',
+    ]);
 
-        $order->update([
-            'payment_status' => $validated['payment_status'],
-        ]);
+    $order->payment_status = $validated['payment_status'];
 
-        return response()->json([
-            'message' => 'Payment status updated successfully.',
-            'order' => $order,
-        ]);
+    if ($validated['payment_status'] === 'paid') {
+        $order->order_status = 'confirmed';
     }
 
+    $order->save();
+
+    return response()->json([
+        'message' => 'Payment status updated successfully.',
+        'order' => $order,
+    ]);
+}
     public function myOrders(Request $request)
     {
         return Order::where('user_id', $request->user()->id)

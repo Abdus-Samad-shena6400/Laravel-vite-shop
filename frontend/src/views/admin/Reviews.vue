@@ -1,13 +1,13 @@
 <template>
-  <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Reviews Management</h1>
+  <div class="p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <h1 class="text-2xl sm:text-3xl font-bold">Reviews Management</h1>
       
-      <div class="flex gap-4">
+      <div class="flex w-full sm:w-auto gap-4">
         <select
           v-model="statusFilter"
           @change="loadReviews"
-          class="border rounded-lg px-4 py-2"
+          class="w-full sm:w-auto border rounded-lg px-4 py-2"
         >
           <option value="">All Reviews</option>
           <option value="pending">Pending</option>
@@ -28,9 +28,9 @@
       <div
         v-for="review in reviews"
         :key="review.id"
-        class="bg-white rounded-lg shadow p-6"
+        class="bg-white rounded-lg shadow p-4 sm:p-6"
       >
-        <div class="flex justify-between items-start">
+        <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start">
           <div class="flex-1">
             <div class="flex items-center gap-4 mb-3">
               <span class="font-semibold">{{ review.user?.name }}</span>
@@ -51,24 +51,24 @@
             <p class="text-gray-700 whitespace-pre-line">{{ review.comment }}</p>
           </div>
 
-          <div class="flex gap-2 ml-4">
+          <div class="flex flex-wrap gap-2 lg:ml-4">
             <button
               v-if="!review.status"
               @click="approveReview(review)"
-              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm"
+              class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm"
             >
               Approve
             </button>
             <button
               v-if="review.status"
               @click="rejectReview(review)"
-              class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm"
+              class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg text-sm"
             >
               Reject
             </button>
             <button
               @click="deleteReview(review)"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm"
             >
               Delete
             </button>

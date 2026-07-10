@@ -1,15 +1,15 @@
 <template>
-    <div class="p-6">
+    <div class="p-4 sm:p-6">
 
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
 
-            <h1 class="text-3xl font-bold">
+            <h1 class="text-2xl sm:text-3xl font-bold">
                 Contact Messages
             </h1>
 
-            <input v-model="search" @input="getContacts()" type="text" placeholder="Search..."
-                class="border rounded-lg px-4 py-2 w-72">
+            <input v-model="search" type="text" placeholder="Search..."
+                class="border rounded-lg px-4 py-2 w-full sm:w-72">
 
         </div>
 
@@ -17,7 +17,8 @@
 
         <div class="bg-white rounded-xl shadow overflow-hidden">
 
-            <table class="w-full">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[860px]">
 
                 <thead class="bg-gray-100">
 
@@ -95,15 +96,15 @@
 
                         <td class="p-4">
 
-                            <div class="flex justify-center gap-2">
+                            <div class="flex flex-col sm:flex-row justify-center gap-2">
 
                                 <router-link :to="`/contacts/${contact.id}`"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">
                                     View
                                 </router-link>
 
                                 <button @click="confirmDelete(contact)"
-                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
                                     Delete
                                 </button>
 
@@ -124,12 +125,13 @@
                 </tbody>
 
             </table>
+            </div>
 
         </div>
 
         <!-- Pagination -->
 
-        <div class="flex justify-end gap-2 mt-6">
+        <div class="flex flex-wrap justify-end gap-2 mt-6">
 
             <button @click="getContacts(pagination.current_page - 1)" :disabled="!pagination.prev_page_url"
                 class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
@@ -147,7 +149,7 @@
     v-if="showDeleteModal"
     class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
 >
-    <div class="bg-white rounded-xl shadow-xl w-[420px] p-6">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
 
         <h2 class="text-2xl font-bold mb-4">
             Delete Message
@@ -186,7 +188,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axiosClient from '../../axios'
 
 const contacts = ref([])
@@ -257,6 +259,11 @@ const formatDate = (date) => {
     return new Date(date).toLocaleDateString()
 
 }
+
+// Watch search input to trigger API call
+watch(search, () => {
+    getContacts(1)
+})
 
 onMounted(() => {
 

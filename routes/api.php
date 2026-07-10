@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\HotDealController;
+use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReportController;
@@ -13,12 +17,12 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\CartController;
-use App\Http\Controllers\Api\CouponController;
 
 // Public Routes
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -36,6 +40,12 @@ Route::prefix('store')->group(function () {
     Route::get('/categories', [StoreController::class, 'categories']);
     Route::get('/brands', [StoreController::class, 'brands']);
     Route::get('/products/{id}', [StoreController::class, 'product']);
+    Route::get('/hot-deals', function () {
+        return \App\Models\HotDeal::with('product')
+            ->visibleForStorefront()
+            ->latest()
+            ->get();
+    });
 });
 
 // Authenticated Routes
@@ -51,6 +61,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Checkout
     Route::post('/checkout', [CheckoutController::class, 'store']);
+
+    Route::post('/checkout/create-payment-intent', [CheckoutController::class, 'createPaymentIntent']);
 
     // Product Reviews (Create)
     Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
@@ -68,13 +80,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart/{cartItem}', [CartController::class, 'destroy']);
     Route::delete('/cart', [CartController::class, 'clear']);
 
-    //wishlist
+    // wishlist
 
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist', [WishlistController::class, 'store']);
     Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy']);
 
+    // Coupon Routes (Apply for customers)
+    Route::post('/coupons/apply', [CouponController::class, 'apply']);
 
+    // invoice Routes
+    Route::get(
+        '/invoice/{order}',
+        [InvoiceController::class, 'show']
+    );
 });
 
 // Admin Routes
@@ -115,4 +134,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/contacts/{contact}', [ContactController::class, 'destroy']);
 
     Route::apiResource('coupons', CouponController::class);
+
+    // Hot Deal Routes
+    Route::apiResource('hot-deals', HotDealController::class);
 });

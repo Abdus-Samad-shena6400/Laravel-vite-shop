@@ -1,86 +1,39 @@
 <template>
-<PublicHeader />
-<div class="max-w-7xl mx-auto py-10 px-4">
-    
-    <div class="mb-10">
-  
-        <h1 class="text-4xl font-bold">
+    <PublicHeader />
+    <div class="container-standard section-padding">
+        <HotDealBanner />
 
-            Shop
-
-        </h1>
-
-        <p class="text-gray-500 mt-2">
-
-            Browse all available products.
-
-        </p>
-
-    </div>
-
-    <div class="grid lg:grid-cols-4 gap-8">
-
-        <!-- Sidebar -->
-
-        <div>
-
-            <ProductFilters
-
-                :categories="categories"
-
-                :brands="brands"
-
-                @apply="applyFilters"
-
-            />
-
+        <div class="mb-6 sm:mb-8 lg:mb-10">
+            <h1 class="text-heading">
+                Shop
+            </h1>
+            <p class="text-body mt-2">
+                Browse all available products.
+            </p>
         </div>
 
-        <!-- Products -->
+        <div class="grid gap-6 lg:gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <!-- Sidebar -->
+            <div class="lg:sticky lg:top-24 lg:h-fit order-2 lg:order-1">
+                <ProductFilters :categories="categories" :brands="brands" @apply="applyFilters" />
+            </div>
 
-        <div class="lg:col-span-3">
-
-            <LoadingSpinner
-
-                v-if="loading"
-
-            />
-
-            <EmptyState
-
-                v-else-if="products.data.length===0"
-
-                title="No Products"
-
-                message="Try changing your filters."
-
-            />
-
-            <ProductGrid
-
-                v-else
-
-                :products="products"
-
-            />
-            <Pagination
-                v-if="products.links"
-                :links="products.links"
-                @change="changePage"
-            />
-
+            <!-- Products -->
+            <div class="min-w-0 order-1 lg:order-2">
+                <LoadingSpinner v-if="loading" />
+                <EmptyState v-else-if="products.data.length === 0" title="No Products"
+                    message="Try changing your filters." />
+                <ProductGrid v-else :products="products" />
+                <Pagination v-if="products.links" :links="products.links" @change="changePage" />
+            </div>
         </div>
-
     </div>
-
-</div>
-
 </template>
 
 
 <script setup>
 
-import {ref,onMounted} from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 import axiosClient from '../../axios'
 
@@ -96,63 +49,66 @@ import EmptyState from '../../components/shop/EmptyState.vue'
 
 import PublicHeader from '../../components/admin/PublicHeader.vue'
 
-const loading=ref(true)
+import HotDealBanner from '../../components/home/HotDealBanner.vue'
 
-const products=ref({
+const loading = ref(true)
 
-    data:[]
+const products = ref({
+
+    data: []
 
 })
 
-const categories=ref([])
+const categories = ref([])
 
-const brands=ref([])
+const brands = ref([])
 
-const filters=ref({})
+const filters = ref({})
 
-const loadProducts=async()=>{
+const loadProducts = async () => {
 
-    loading.value=true
+    loading.value = true
 
-    try{
+    try {
 
-        const {data}=await axiosClient.get('/store/products',{
+        const { data } = await axiosClient.get('/store/products', {
 
-            params:filters.value
+            params: filters.value
 
         })
 
-        products.value=data
+        products.value = data
 
     }
 
-    finally{
+    finally {
 
-        loading.value=false
+        loading.value = false
 
     }
 
 }
 
-const loadCategories=async()=>{
 
-    const {data}=await axiosClient.get('/store/categories')
+const loadCategories = async () => {
 
-    categories.value=data
+    const { data } = await axiosClient.get('/store/categories')
 
-}
-
-const loadBrands=async()=>{
-
-    const {data}=await axiosClient.get('/store/brands')
-
-    brands.value=data
+    categories.value = data
 
 }
 
-const applyFilters=(newFilters)=>{
+const loadBrands = async () => {
 
-    filters.value={...newFilters}
+    const { data } = await axiosClient.get('/store/brands')
+
+    brands.value = data
+
+}
+
+const applyFilters = (newFilters) => {
+
+    filters.value = { ...newFilters }
 
     loadProducts()
 
@@ -190,7 +146,7 @@ const changePage = async (url) => {
 
 }
 
-onMounted(async()=>{
+onMounted(async () => {
 
     await Promise.all([
 
@@ -204,4 +160,19 @@ onMounted(async()=>{
 
 })
 
+
+
+
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .8s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

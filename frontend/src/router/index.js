@@ -26,7 +26,16 @@ import ProductShow from '../views/store/ProductShow.vue'
 import Coupon from '../views/admin/Coupon.vue'
 import CouponCreate from '../views/admin/CouponCreate.vue'
 import CouponEdit from '../views/admin/CouponEdit.vue'
+import HotDeal from '../views/admin/HotDeal.vue'
+import HotDealCreate from '../views/admin/HotDealCreate.vue'
+import HotDealEdit from '../views/admin/HotDealEdit.vue'
+import OrderSuccess from '../views/store/OrderSuccess.vue'
 import store from '../store'
+import Checkout from '../views/store/Checkout.vue'
+import Contact from '../views/store/Contact.vue'
+import About from '../views/store/About.vue'
+import MyOrderDetails from '../views/store/MyOrderDetails.vue'
+
 
 
 const routes = [
@@ -53,26 +62,33 @@ const routes = [
     {
         path: '/checkout',
         name: 'checkout',
-        component: () => import('../views/store/Checkout.vue'),
+        component: Checkout,
         meta: { requiresAuth: true }
     },
     {
+        path: '/order-success/:id',
+        name: 'order-success',
+        component: OrderSuccess,
+        meta: { requiresAuth: true }
+    },
+    
+    {
         path: '/contact',
         name: 'contact',
-        component: () => import('../views/store/Contact.vue')
+        component: Contact
     },
 
     {
         path: '/about',
         name: 'about',
-        component: () => import('../views/store/About.vue')
+        component: About
     },
 
 
     {
         path: '/my-orders/:id',
         name: 'myOrderDetails',
-        component: () => import('../views/store/MyOrderDetails.vue')
+        component: MyOrderDetails
     },
     {
         path: '/wishlist',
@@ -86,6 +102,12 @@ const routes = [
         meta: { requiresAuth: true } // <--- Requires login to access
 
 
+    },
+    {
+        path: '/invoice/:id',
+        name: 'invoice',
+        component: () => import('../views/store/Invoice.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/',
@@ -176,12 +198,12 @@ const routes = [
             },
             {
                 path: '/admin/coupons/create',
-                name: 'couponCreate',
+                name: 'coupon.create',
                 component: CouponCreate
             },
             {
                 path: '/admin/coupons/:id/edit',
-                name: 'couponEdit',
+                name: 'coupon.edit',
                 component: CouponEdit
             },
 
@@ -189,6 +211,24 @@ const routes = [
                 path: 'reports',
                 name: 'reports',
                 component: () => import('../views/admin/Reports.vue')
+            },
+            {
+                path: '/admin/hot-deals',
+                name: 'hot-deals',
+                component: HotDeal,
+                meta: { requiresAuth: true, admin: true }
+            },
+            {
+                path: '/admin/hot-deals/create',
+                name: 'hot-deal.create',
+                component: HotDealCreate,
+                meta: { requiresAuth: true, admin: true }
+            },
+            {
+                path: '/admin/hot-deals/:id/edit',
+                name: 'hot-deal.edit',
+                component: HotDealEdit,
+                meta: { requiresAuth: true, admin: true }
             },
 
             {

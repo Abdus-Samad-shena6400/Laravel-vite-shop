@@ -1,7 +1,7 @@
 <template>
   <GuestLayout title="Sign in to your account">
     <!-- General Error Alert -->
-    <div v-if="errors.general" class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg mb-6">
+    <div v-if="errors.general" class="bg-red-50 border-l-4 border-red-400 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -9,12 +9,12 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-700">{{ errors.general[0] }}</p>
+          <p class="text-xs sm:text-sm text-red-700">{{ errors.general[0] }}</p>
         </div>
       </div>
     </div>
 
-    <form class="space-y-6" @submit.prevent="onSubmit">
+    <form class="space-y-4 sm:space-y-6" @submit.prevent="onSubmit">
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
         <input
@@ -22,8 +22,7 @@
           id="email"
           required
           v-model="credentials.email"
-          class="appearance-none rounded-lg relative block w-full px-3 py-2.5 border placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:z-10 sm:text-sm transition-all w-full"
-          :class="errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500 text-red-950 bg-red-50/30' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'"
+          :class="errors.email ? 'input-error' : 'input-standard'"
           placeholder="you@example.com"
         />
         <span v-if="errors.email" class="text-xs text-red-600 mt-1 block">{{ errors.email[0] }}</span>
@@ -43,24 +42,20 @@
           id="password"
           required
           v-model="credentials.password"
-          class="appearance-none rounded-lg relative block w-full px-3 py-2.5 border placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:z-10 sm:text-sm transition-all w-full"
-          :class="errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500 text-red-950 bg-red-50/30' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'"
+          :class="errors.password ? 'input-error' : 'input-standard'"
           placeholder="••••••••"
         />
         <span v-if="errors.password" class="text-xs text-red-600 mt-1 block">{{ errors.password[0] }}</span>
       </div>
 
       <div>
-        <button
-          type="submit"
-          class="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-md hover:shadow-lg"
-        >
+        <button type="submit" class="btn-primary w-full py-2.5 sm:py-3 text-sm sm:text-base">
           Sign in
         </button>
       </div>
     </form>
 
-    <p class="mt-8 text-center text-sm text-gray-600">
+    <p class="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-gray-600">
       Not a member?
       <router-link :to="{ name: 'register' }" class="font-medium text-indigo-600 hover:text-indigo-500 transition-colors ml-1">
         Create an account

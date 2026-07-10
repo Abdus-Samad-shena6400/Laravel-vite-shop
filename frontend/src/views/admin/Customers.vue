@@ -1,11 +1,11 @@
 <template>
-    <div class="p-6">
+    <div class="p-4 sm:p-6">
 
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
 
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
                     Customers
                 </h1>
 
@@ -15,14 +15,15 @@
             </div>
 
             <input v-model="search" @input="loadCustomers" type="text" placeholder="Search customers..."
-                class="border rounded-lg px-4 py-2 w-72 focus:ring-2 focus:ring-indigo-500 outline-none">
+                class="border rounded-lg px-4 py-2 w-full sm:w-72 focus:ring-2 focus:ring-indigo-500 outline-none">
 
         </div>
 
         <!-- Table -->
         <div class="bg-white rounded-xl shadow overflow-hidden">
 
-            <table class="w-full">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[720px]">
 
                 <thead class="bg-gray-50">
                     <tr class="text-left">
@@ -73,6 +74,7 @@
                 </tbody>
 
             </table>
+            </div>
 
         </div>
 

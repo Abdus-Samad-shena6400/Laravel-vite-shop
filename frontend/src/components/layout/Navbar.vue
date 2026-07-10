@@ -1,5 +1,5 @@
 <template>
-  <header class="h-16 flex items-center justify-between bg-white shadow-sm border-b border-gray-150 px-6">
+  <header class="h-16 flex items-center justify-between bg-white shadow-sm border-b border-gray-150 px-4 sm:px-6">
     <!-- Left side: Toggle button -->
     <button
       @click="emit('toggle-sidebar')"
@@ -22,7 +22,7 @@
               {{ userInitials }}
             </div>
             <!-- Dynamic User Name -->
-            <span class="hidden md:block text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+            <span class="hidden sm:block text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
               {{ currentUser.name || 'User' }}
             </span>
             <ChevronDownIcon class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />

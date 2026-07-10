@@ -303,7 +303,7 @@
     >
         <div
             v-if="toast.show"
-            class="fixed top-5 right-5 z-50"
+            class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50"
         >
             <div
                 class="px-6 py-4 rounded-lg shadow-xl text-white"

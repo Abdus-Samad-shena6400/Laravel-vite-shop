@@ -1,10 +1,10 @@
 <template>
-    <div class="p-6">
+    <div class="p-4 sm:p-6">
 
         <!-- Header -->
         <div class="mb-8">
 
-            <h1 class="text-3xl font-bold text-gray-800">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
                 Sales Report
             </h1>
 
@@ -16,9 +16,9 @@
 
         <!-- Filters -->
 
-        <div class="bg-white rounded-xl shadow p-6 mb-8">
+        <div class="bg-white rounded-xl shadow p-4 sm:p-6 mb-8">
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
 
                 <div>
 
@@ -40,11 +40,9 @@
 
                 </div>
 
-                <div class="flex items-end gap-3">
+                <div class="flex items-end gap-3 col-span-1 sm:col-span-2">
 
-
-
-                    <button @click="exportPdf" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg">
+                    <button @click="exportPdf" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg">
                         Export PDF
                     </button>
 
@@ -56,7 +54,7 @@
 
         <!-- Summary Cards -->
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
 
             <div class="bg-white rounded-xl shadow p-6">
 
