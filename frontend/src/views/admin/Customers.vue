@@ -61,12 +61,12 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            {{ customer.created_at }}
+                            {{ formatDate(customer.created_at) }}
                         </td>
 
                         <td class="px-6 py-4 text-center">
                             <router-link :to="{ name: 'customers.show', params: { id: customer.id } }"
-                                class="text-indigo-600 hover:underline">
+                                class="bg-indigo-600 text-white px-4 py-2 rounded text-sm">
                                 View
                             </router-link>
                         </td>
@@ -85,6 +85,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axiosClient from '../../axios'
+import { formatDate } from '../../utils/dateFormatter'
 
 const customers = ref({
     data: []

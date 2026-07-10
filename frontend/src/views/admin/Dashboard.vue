@@ -60,7 +60,7 @@
         <div class="mt-6 sm:mt-8 lg:mt-10 card-admin">
             <div class="border-b px-4 sm:px-6 py-4 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
                 <h2 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800">Latest Orders</h2>
-                <router-link :to="{ name: 'orders' }" class="text-indigo-600 hover:text-indigo-700 font-medium text-sm sm:text-base">View All</router-link>
+                <router-link :to="{ name: 'orders' }" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium text-sm sm:text-base">View All</router-link>
             </div>
 
             <div class="overflow-x-auto">
@@ -91,7 +91,7 @@
                                 </span>
                             </td>
                             <td class="px-4 sm:px-6 py-3 sm:py-4 text-center">
-                                <router-link :to="{ name: 'orders.show', params: { id: order.id } }" class="text-indigo-600 hover:underline text-xs sm:text-sm">
+                                <router-link :to="{ name: 'orders.show', params: { id: order.id } }" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:underline">
                                     View
                                 </router-link>
                             </td>

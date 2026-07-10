@@ -127,11 +127,19 @@
                                 Loading payment form...
                             </div>
                         </div>
-
-                        <button @click="placeOrder" :disabled="loading || (form.payment_method === 'stripe' && !paymentIntentId.value)"
-                            class="btn-primary w-full py-3 sm:py-4 text-sm sm:text-base disabled:bg-gray-400 disabled:cursor-not-allowed mb-3">
-                            {{ loading ? 'Placing Order...' : 'Place Order' }}
-                        </button>
+                       <button
+    @click="placeOrder"
+    :disabled="loading || (form.payment_method === 'stripe' && !paymentIntentId)"
+    class="btn-primary w-full py-3 sm:py-4 text-sm sm:text-base disabled:bg-gray-400 disabled:cursor-not-allowed mb-2"
+>
+    {{
+        loading
+            ? 'Processing...'
+            : form.payment_method === 'stripe' && !paymentIntentId
+                ? 'Initializing Stripe...'
+                : 'Place Order'
+    }}
+</button>
 
                         <button @click="clearCart" class="btn-danger w-full py-3 text-sm sm:text-base">
                             Clear Cart
@@ -239,11 +247,11 @@ const applyCoupon = async () => {
         coupon.value = data.coupon
         couponDiscount.value = data.coupon.discount
 
-        alert('Coupon applied successfully.')
+        toast.success('Coupon applied successfully.')
 
     } catch (error) {
 
-        alert(error.response?.data?.message || 'Invalid coupon.')
+        toast.error(error.response?.data?.message || 'Invalid coupon.')
 
     }
 }
@@ -350,6 +358,16 @@ watch(() => form.payment_method, (newMethod) => {
 const placeOrder = async () => {
     loading.value = true
     try {
+        // Validate required fields
+        const requiredFields = ['first_name', 'last_name', 'phone', 'address1', 'city', 'state', 'zip_code', 'country_code']
+        for (const field of requiredFields) {
+            if (!form[field]?.trim()) {
+                toast.error(`Please fill in all required fields.`)
+                loading.value = false
+                return
+            }
+        }
+
         if (form.payment_method === 'bank_transfer' && !form.transaction_id?.trim()) {
             toast.error('Please enter a transaction ID for bank transfer payments.')
             loading.value = false

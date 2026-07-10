@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-200 lg:flex">
     <div
-      class="fixed inset-y-0 left-0 z-40 w-[220px] transform transition-transform duration-300 lg:static lg:translate-x-0"
+      class="fixed inset-y-0 left-0 z-40 w-[220px] transform transition-transform duration-300"
       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <Sidebar />
@@ -13,7 +13,7 @@
       @click="closeSidebar"
     ></div>
 
-    <div class="flex-1 flex flex-col min-h-screen overflow-hidden lg:ml-0">
+    <div class="flex-1 flex flex-col min-h-screen overflow-hidden transition-all duration-300" :class="sidebarOpen ? 'lg:ml-[220px]' : 'lg:ml-0'">
       <Navbar @toggle-sidebar="toggleSidebar"></Navbar>
 
       <main class="flex-1 p-4 sm:p-6 overflow-y-auto">

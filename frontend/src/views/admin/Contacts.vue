@@ -94,20 +94,16 @@
 
                         </td>
 
-                        <td class="p-4">
+                        <td class="p-4 text-center">
 
-                            <div class="flex flex-col sm:flex-row justify-center gap-2">
-
-                                <router-link :to="`/contacts/${contact.id}`"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">
+                            <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                                <router-link :to="`/contacts/${contact.id}`" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm">
                                     View
                                 </router-link>
-
-                                <button @click="confirmDelete(contact)"
-                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
-                                    Delete
+                                <button @click="confirmDelete(contact)" :disabled="deleting"
+                                    class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm">
+                                    {{ deleting ? 'Deleting...' : 'Delete' }}
                                 </button>
-
                             </div>
 
                         </td>
@@ -190,6 +186,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import axiosClient from '../../axios'
+import { formatDate } from '../../utils/dateFormatter'
 
 const contacts = ref([])
 const pagination = ref({})
@@ -254,11 +251,6 @@ const deleteContact = async () => {
 
 }
 
-const formatDate = (date) => {
-
-    return new Date(date).toLocaleDateString()
-
-}
 
 // Watch search input to trigger API call
 watch(search, () => {

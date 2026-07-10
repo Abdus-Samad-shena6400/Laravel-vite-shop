@@ -140,7 +140,7 @@
                                     :disabled="deleting"
                                     class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-5 py-2 rounded text-sm"
                                 >
-                                    Delete
+                                    {{ deleting ? 'Deleting...' : 'Delete' }}
                                 </button>
                             </div>
                         </td>

@@ -38,7 +38,7 @@
                 </div>
 
                 <router-link :to="{ name: 'orders' }"
-                    class="bg-blue-700 hover:bg-gray-800 text-white px-5 py-2 rounded-lg">
+                    class="bg-blue-700 text-white px-5 py-2 rounded-lg">
                     Back
                 </router-link>
 

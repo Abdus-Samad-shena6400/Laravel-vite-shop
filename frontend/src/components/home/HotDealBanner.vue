@@ -93,7 +93,7 @@
                                             ${{ formatPrice(getOriginalPrice(activeDeal)) }}
                                         </div>
                                     </div>
-                                    <div class="flex flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                    <div class="flex flex-col gap-2 sm:gap-3">
     <div class="text-xs sm:text-sm text-gray-500">
         <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd"
@@ -104,7 +104,7 @@
     </div>
 
     <span
-        class="inline-flex self-start sm:self-auto bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
+        class="inline-flex w-fit bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
     >
         View Deal
     </span>

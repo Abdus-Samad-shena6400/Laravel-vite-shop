@@ -152,7 +152,7 @@
                         <td class="text-center">
 
                             <router-link :to="{ name: 'orders.show', params: { id: order.id } }"
-                                class="text-indigo-600 hover:text-indigo-800 font-medium">
+                                class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium">
                                 View
                             </router-link>
 

@@ -1,9 +1,9 @@
 <template>
   <div class="w-full h-full bg-gray-900 text-gray-300 flex flex-col transition-all duration-300 shadow-xl border-r border-gray-800">
     <!-- Brand / Header -->
-    <div class="h-16 flex items-center px-4 bg-gray-950 font-semibold text-white tracking-wider border-b border-gray-800">
-      <span class="text-indigo-400 mr-2 text-xl font-black">🛍️</span>
-      <span class="text-sm">E-Shop Admin</span>
+    <div class="h-16 flex items-center px-4 font-semibold text-white tracking-wider border-b border-gray-800">
+      <img src="@/assets/logo.png" alt="BLS Mart" class="h-20 w-20 object-contain mr-2" />
+      <span class="text-sm">BLS Mart Admin</span>
     </div>
 
     <!-- Navigation Links -->

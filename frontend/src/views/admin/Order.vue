@@ -127,7 +127,7 @@
                         </td>
 
                         <td class="p-4">
-                            {{ order.created_at }}
+                            {{ formatDate(order.created_at) }}
                         </td>
 
                         <td class="p-4 text-center">
@@ -230,6 +230,7 @@
 
 import { ref, onMounted } from 'vue'
 import axiosClient from '../../axios'
+import { formatDate } from '../../utils/dateFormatter'
 
 const orders = ref([])
 

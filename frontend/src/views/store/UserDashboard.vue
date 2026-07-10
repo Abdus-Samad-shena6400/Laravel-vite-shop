@@ -115,7 +115,7 @@
                 <div class="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <p class="text-xs text-gray-500">Date</p>
-                    <p class="text-gray-700">{{ new Date(order.created_at).toLocaleDateString() }}</p>
+                    <p class="text-gray-700">{{ formatDate(order.created_at) }}</p>
                   </div>
                   <div>
                     <p class="text-xs text-gray-500">Items</p>
@@ -156,7 +156,7 @@
                   </tr>
                   <tr v-else v-for="order in orders" :key="order.id" class="hover:bg-gray-50/50 transition-colors">
                     <td class="px-6 py-4 text-indigo-600 font-bold">#{{ order.order_number }}</td>
-                    <td class="px-6 py-4 text-gray-500">{{ new Date(order.created_at).toLocaleDateString() }}</td>
+                    <td class="px-6 py-4 text-gray-500">{{ formatDate(order.created_at) }}</td>
                     <td class="px-6 py-4">{{ order.items?.length || 0 }} items</td>
                     <td class="px-6 py-4 font-extrabold text-gray-900">${{ Number(order.grand_total).toFixed(2) }}</td>
                     <td class="px-6 py-4">
@@ -236,6 +236,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import axiosClient from '../../axios'
 import PublicHeader from '../../components/admin/PublicHeader.vue'
+import { formatDate } from '../../utils/dateFormatter'
 
 
 

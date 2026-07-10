@@ -32,7 +32,7 @@
 
                         <p class="text-gray-500 mt-2">
 
-                            {{ formatDate(order.created_at) }}
+                            {{ formatDateTime(order.created_at) }}
 
                         </p>
 
@@ -251,21 +251,25 @@
                 </div>
 
                 <!-- Cancel Button -->
-                <div v-if="['pending', 'processing'].includes(order.order_status)"
-                    class="border-t p-6 flex justify-end">
-                    <button @click="cancelOrder" :disabled="cancelling"
-                        class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold">
-                        {{ cancelling ? 'Cancelling...' : 'Cancel Order' }}
-                    </button>
-                </div>
+              <div
+    v-if="['pending', 'processing'].includes(order.order_status)"
+    class="border-t p-6 flex justify-end items-center gap-3"
+>
+    <button
+        @click="cancelOrder"
+        :disabled="cancelling"
+        class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold"
+    >
+        {{ cancelling ? 'Cancelling...' : 'Cancel Order' }}
+    </button>
 
-                <router-link
-                    :to="{ name: 'invoice', params: { id: order.id } }"
-                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg"
-                >
-                    Download Invoice
-                </router-link>
-
+    <router-link
+        :to="{ name: 'invoice', params: { id: order.id } }"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold"
+    >
+        Download Invoice
+    </router-link>
+</div>
             </div>
 
         </div>
@@ -291,6 +295,7 @@ import { useRoute } from 'vue-router'
 import axiosClient from '../../axios'
 import PublicHeader from '../../components/admin/PublicHeader.vue'
 import ReviewForm from '../../components/reviews/ReviewForm.vue'
+import { formatDateTime } from '../../utils/dateFormatter'
 
 const route = useRoute()
 
@@ -365,12 +370,6 @@ const loadOrder = async () => {
         loading.value = false
 
     }
-
-}
-
-const formatDate = (date) => {
-
-    return new Date(date).toLocaleString()
 
 }
 
