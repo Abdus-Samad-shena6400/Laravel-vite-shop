@@ -17,12 +17,10 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
