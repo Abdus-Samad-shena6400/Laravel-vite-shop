@@ -123,6 +123,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
     // Review Routes (Admin)
     Route::apiResource('reviews', ReviewController::class);
+    
 
     // Contact Routes (Admin)
     Route::get('/contacts', [ContactController::class, 'index']);

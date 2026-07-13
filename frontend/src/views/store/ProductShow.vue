@@ -59,7 +59,7 @@
                             ${{ product.deal_price }}
                         </span>
                         <span class="text-xl sm:text-2xl text-gray-400 line-through">
-                            ${{ product.price }}
+                            ${{ product.regular_price }}
                         </span>
                         <div class="mt-2">
                             <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">

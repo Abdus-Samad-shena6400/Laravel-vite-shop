@@ -24,6 +24,14 @@ class Order extends Model
         'payment_proof',
     ];
 
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'shipping' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'grand_total' => 'decimal:2',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

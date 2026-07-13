@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderPlacedMail;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -11,12 +12,12 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
     public function store(Request $request)
     {
-        
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -28,7 +29,7 @@ class CheckoutController extends Controller
             'zip_code' => 'required|string|max:20',
             'country_code' => 'required|string|max:3',
             'notes' => 'nullable|string',
-           'payment_method' => 'required|in:cash_on_delivery,bank_transfer,stripe',
+            'payment_method' => 'required|in:cash_on_delivery,bank_transfer,stripe',
             'transaction_id' => 'required_if:payment_method,bank_transfer|nullable|string|max:255',
             'payment_intent_id' => 'required_if:payment_method,stripe|nullable|string',
             'cart' => 'required|array|min:1',
@@ -107,24 +108,24 @@ class CheckoutController extends Controller
             $discount = $validated['discount'] ?? 0;
 
             $grandTotal = $subtotal + $shipping + $tax - $discount;
-            
+
             // Set payment status based on payment method
             if ($validated['payment_method'] === 'stripe') {
                 $paymentStatus = $validated['payment_status'] ?? 'paid';
             } elseif ($validated['payment_method'] === 'bank_transfer') {
                 $paymentStatus = 'pending';
             } else {
-                $paymentStatus = 'pending'; // cash_on_delivery
+                $paymentStatus = 'pending';  // cash_on_delivery
             }
 
             $order = Order::create([
                 'user_id' => $request->user()->id,
                 'order_number' => 'ORD-' . strtoupper(uniqid()),
-                'subtotal' => $subtotal,
-                'shipping' => $shipping,
-                'tax' => $tax,
-                'discount' => $discount,
-                'grand_total' => $grandTotal,
+                'subtotal' => number_format($subtotal, 2, '.', ''),
+                'shipping' => number_format($shipping, 2, '.', ''),
+                'tax' => number_format($tax, 2, '.', ''),
+                'discount' => number_format($discount, 2, '.', ''),
+                'grand_total' => number_format($grandTotal, 2, '.', ''),
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $paymentStatus,
                 'order_status' => 'pending',
@@ -164,16 +165,27 @@ class CheckoutController extends Controller
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product']['id'],
-                    'price' => $price,
+                    'price' => number_format($price, 2, '.', ''),
                     'quantity' => $item['quantity'],
-                    'total' => $price * $item['quantity'],
-                    'original_price' => $product->regular_price,
+                    'total' => number_format($price * $item['quantity'], 2, '.', ''),
+                    'original_price' => number_format($product->regular_price, 2, '.', ''),
                     'discount_percentage' => $product->hotDeal?->discount_percentage ?? 0,
                     'is_hot_deal' => $product->hotDeal ? true : false,
                 ]);
             }
 
             DB::commit();
+
+            // Load relations for email
+            $order->load([
+                'user',
+                'items.product',
+                'detail'
+            ]);
+
+            // Send confirmation email
+            Mail::to($order->user->email)
+                ->send(new OrderPlacedMail($order));
 
             return response()->json([
                 'message' => 'Order placed successfully.',
@@ -192,21 +204,21 @@ class CheckoutController extends Controller
     }
 
     public function createPaymentIntent(Request $request)
-{
-    $validated = $request->validate([
-        'amount' => 'required|numeric|min:1',
-        'currency' => 'required|string',
-    ]);
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'currency' => 'required|string',
+        ]);
 
-    \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
-    $paymentIntent = \Stripe\PaymentIntent::create([
-        'amount' => $validated['amount'] * 100, // Convert to cents
-        'currency' => $validated['currency'],
-    ]);
+        $paymentIntent = \Stripe\PaymentIntent::create([
+            'amount' => $validated['amount'] * 100,  // Convert to cents
+            'currency' => $validated['currency'],
+        ]);
 
-    return response()->json([
-        'client_secret' => $paymentIntent->client_secret,
-    ]);
-}
+        return response()->json([
+            'client_secret' => $paymentIntent->client_secret,
+        ]);
+    }
 }

@@ -14,7 +14,7 @@
     ></div>
 
     <div class="flex-1 flex flex-col min-h-screen overflow-hidden transition-all duration-300" :class="sidebarOpen ? 'lg:ml-[220px]' : 'lg:ml-0'">
-      <Navbar @toggle-sidebar="toggleSidebar"></Navbar>
+      <Navbar @toggle-sidebar="toggleSidebar" :sidebar-open="sidebarOpen"></Navbar>
 
       <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
         <router-view></router-view>

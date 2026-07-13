@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordChangedMail;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password; // <--- Imported for password reset broker
 
 class AuthController extends Controller
@@ -160,7 +162,12 @@ class AuthController extends Controller
 
         $user->save();
 
-        // 4. Return the updated user object
+        // 4. Send password change confirmation email if password was changed
+        if (!empty($data['password'])) {
+            Mail::to($user->email)->send(new PasswordChangedMail($user));
+        }
+
+        // 5. Return the updated user object
         return response()->json([
             'user' => $user,
             'message' => 'Profile updated successfully.'

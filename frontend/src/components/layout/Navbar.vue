@@ -1,12 +1,19 @@
 <template>
   <header class="h-16 flex items-center justify-between bg-white shadow-sm border-b border-gray-150 px-4 sm:px-6">
-    <!-- Left side: Toggle button -->
-    <button
-      @click="emit('toggle-sidebar')"
-      class="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none"
-    >
-      <MenuIcon class="h-6 w-6" />
-    </button>
+    <!-- Left side: Toggle button and Logo (shown when sidebar is closed) -->
+    <div class="flex items-center space-x-4">
+      <button
+        @click="emit('toggle-sidebar')"
+        class="p-2 text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none"
+      >
+        <MenuIcon class="h-6 w-6" />
+      </button>
+      <!-- Logo and Brand Name - only show when sidebar is closed -->
+      <div v-if="!sidebarOpen" class="flex items-center space-x-1">
+        <img src="@/assets/logo.png" alt="BLS Mart" class="h-20 w-20 object-contain"/>
+        <span class="text-xl font-bold text-gray-800">BLS Mart Admin</span>
+      </div>
+    </div>
 
     <!-- Right side: Profile Menu -->
     <div class="flex items-center space-x-4">
@@ -77,6 +84,12 @@ import { useStore } from 'vuex'
 const router = useRouter()
 const store = useStore()
 const emit = defineEmits(['toggle-sidebar'])
+const props = defineProps({
+  sidebarOpen: {
+    type: Boolean,
+    default: true
+  }
+})
 
 // Dropdown visibility state
 const isOpen = ref(false)
