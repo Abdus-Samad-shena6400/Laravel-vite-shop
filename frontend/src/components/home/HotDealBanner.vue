@@ -167,7 +167,7 @@ const formatPrice = (value) => {
 const getOriginalPrice = (deal) => {
     if (!deal?.product) return null
 
-    return deal.product.regular_price ?? deal.product.sale_price ?? deal.product.price ?? null
+    return deal.product.regular_price ?? null
 }
 
 const startCountdown = (endTime) => {

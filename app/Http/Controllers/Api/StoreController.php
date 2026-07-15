@@ -52,15 +52,21 @@ class StoreController extends Controller
 
     $products = $query->paginate(12);
     $products->getCollection()->transform(function ($product) {
-        $product->price = $product->sale_price ?? $product->regular_price;
-        
-        // Check for active hot deal
+        // Check for active hot deal first
         $hotDeal = $product->hotDeal()->first();
         
         if ($hotDeal) {
             $product->hot_deal = $hotDeal;
             $product->deal_price = $hotDeal->deal_price;
             $product->discount_percentage = $hotDeal->discount_percentage;
+            // price should be the original price (regular/sale) for display comparison
+            $product->price = $product->sale_price ?? $product->regular_price;
+        } else {
+            // No hot deal, price is the current selling price
+            $product->price = $product->sale_price ?? $product->regular_price;
+            $product->hot_deal = null;
+            $product->deal_price = null;
+            $product->discount_percentage = null;
         }
         
         // Add average rating and review count
@@ -89,9 +95,7 @@ public function product($id)
         ->where('status', 1)
         ->findOrFail($id);
 
-    $product->price = $product->sale_price ?? $product->regular_price;
-
-    // Check for visible hot deal
+    // Check for visible hot deal first
     $hotDeal = \App\Models\HotDeal::with('product')
         ->where('product_id', $product->id)
         ->visibleForStorefront()
@@ -101,7 +105,11 @@ public function product($id)
         $product->hot_deal = $hotDeal;
         $product->deal_price = $hotDeal->deal_price;
         $product->discount_percentage = $hotDeal->discount_percentage;
+        // price should be the original price (regular/sale) for display comparison
+        $product->price = $product->sale_price ?? $product->regular_price;
     } else {
+        // No hot deal, price is the current selling price
+        $product->price = $product->sale_price ?? $product->regular_price;
         $product->hot_deal = null;
         $product->deal_price = null;
         $product->discount_percentage = null;

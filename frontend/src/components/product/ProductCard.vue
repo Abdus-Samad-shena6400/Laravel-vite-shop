@@ -48,7 +48,7 @@
                                 ${{ product.deal_price }}
                             </span>
                             <span class="text-sm sm:text-lg text-gray-400 line-through ml-2">
-                                ${{ product.price }}
+                                ${{ product.regular_price }}
                             </span>
                         </div>
                         <div v-else>

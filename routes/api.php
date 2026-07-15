@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\HotDealController;
 use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReportController;
@@ -91,6 +92,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get(
         '/invoice/{order}',
         [InvoiceController::class, 'show']
+    );
+
+    // Notification Routes
+    Route::get('/notifications', [NotificationController::class, 'index']);
+
+    Route::put(
+        '/notifications/{notification}/read',
+        [NotificationController::class, 'markAsRead']
+    );
+    Route::delete(
+        '/notifications/{notification}',
+        [NotificationController::class, 'destroy']
+    );
+
+    Route::delete(
+        '/notifications',
+        [NotificationController::class, 'clearAll']
     );
 });
 

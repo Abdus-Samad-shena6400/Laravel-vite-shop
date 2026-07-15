@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -116,26 +114,63 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    public function updateStatus(Request $request, Order $order)
-    {
-        $validated = $request->validate([
-            'order_status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled'
-        ]);
+   public function updateStatus(Request $request, Order $order)
+{
+    $validated = $request->validate([
+        'order_status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled'
+    ]);
 
-        $order->update([
-            'order_status' => $validated['order_status']
-        ]);
+    $order->order_status = $validated['order_status'];
 
-        $order->load('user');
-
-        Mail::to($order->user->email)
-            ->send(new OrderStatusUpdatedMail($order));
-
-        return response()->json([
-            'message' => 'Order status updated successfully.',
-            'order' => $order
-        ]);
+    if ($validated['order_status'] == 'confirmed') {
+        $order->notification_status = 1;
     }
+
+    if ($validated['order_status'] == 'delivered') {
+        $order->notification_status = 2;
+    }
+
+    if ($validated['order_status'] == 'cancelled') {
+        $order->notification_status = 3;
+    }
+
+    $order->save();
+
+    // Create live notification
+    if (in_array($validated['order_status'], [
+        'confirmed',
+        'delivered',
+        'cancelled'
+    ])) {
+
+        $message = match ($validated['order_status']) {
+            'confirmed' => "Your order {$order->order_number} has been confirmed.",
+            'delivered' => "Your order {$order->order_number} has been delivered successfully.",
+            'cancelled' => "Your order {$order->order_number} has been cancelled.",
+        };
+
+        // Check if similar notification already exists in the last hour
+        $existingNotification = \App\Models\Notification::where('user_id', $order->user_id)
+            ->where('title', 'Order Update')
+            ->where('message', $message)
+            ->where('created_at', '>', now()->subHour())
+            ->first();
+
+        if (!$existingNotification) {
+            \App\Models\Notification::create([
+                'user_id' => $order->user_id,
+                'title' => 'Order Update',
+                'message' => $message,
+                'is_read' => false,
+            ]);
+        }
+    }
+
+    return response()->json([
+        'message' => 'Order status updated successfully.',
+        'order' => $order
+    ]);
+}
 
     public function updatePaymentStatus(Request $request, Order $order)
     {
@@ -143,17 +178,19 @@ class OrderController extends Controller
             'payment_status' => 'required|in:pending,paid,failed',
         ]);
 
+        $oldStatus = $order->order_status;
         $order->payment_status = $validated['payment_status'];
-        $order->load('user');
-
-        Mail::to($order->user->email)
-            ->send(new OrderStatusUpdatedMail($order));
 
         if ($validated['payment_status'] === 'paid') {
             $order->order_status = 'confirmed';
         }
 
         $order->save();
+
+        // Trigger status email if order status changed
+        if ($oldStatus !== $order->order_status) {
+            $order->update(['status_email_sent' => 0]);
+        }
 
         return response()->json([
             'message' => 'Payment status updated successfully.',
@@ -164,6 +201,7 @@ class OrderController extends Controller
     public function myOrders(Request $request)
     {
         return Order::where('user_id', $request->user()->id)
+            ->with('items')
             ->latest()
             ->paginate(10);
     }
@@ -205,7 +243,8 @@ class OrderController extends Controller
         }
 
         $order->update([
-            'order_status' => 'cancelled'
+            'order_status' => 'cancelled',
+            'status_email_sent' => 0
         ]);
 
         return response()->json([

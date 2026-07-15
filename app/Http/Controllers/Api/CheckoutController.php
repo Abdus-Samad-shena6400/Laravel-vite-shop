@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\OrderPlacedMail;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -133,6 +133,8 @@ class CheckoutController extends Controller
                 'coupon_id' => $validated['coupon_id'] ?? null,
                 'coupon_code' => $validated['coupon_code'] ?? null,
                 'transaction_id' => $validated['transaction_id'] ?? null,
+                'order_email_sent' => 0,
+                'status_email_sent' => 0,
             ]);
 
             // Increment coupon usage count if coupon was used
@@ -175,17 +177,6 @@ class CheckoutController extends Controller
             }
 
             DB::commit();
-
-            // Load relations for email
-            $order->load([
-                'user',
-                'items.product',
-                'detail'
-            ]);
-
-            // Send confirmation email
-            Mail::to($order->user->email)
-                ->send(new OrderPlacedMail($order));
 
             return response()->json([
                 'message' => 'Order placed successfully.',

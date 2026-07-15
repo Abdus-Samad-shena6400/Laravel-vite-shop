@@ -128,8 +128,34 @@
                     <p class="font-extrabold text-gray-900">${{ Number(order.grand_total).toFixed(2) }}</p>
                   </div>
                   <router-link :to="{ name: 'myOrderDetails', params: { id: order.id } }" class="btn-primary px-4 py-2 text-xs">
-                    View Details
+                    View
                   </router-link>
+                </div>
+              </div>
+
+              <!-- Mobile Pagination -->
+              <div v-if="pagination.last_page > 1" class="flex items-center justify-between pt-4 border-t border-gray-200">
+                <p class="text-xs text-gray-500">
+                  {{ (pagination.current_page - 1) * pagination.per_page + 1 }}-{{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }} of {{ pagination.total }}
+                </p>
+                <div class="flex gap-2">
+                  <button
+                    @click="fetchOrders(pagination.current_page - 1)"
+                    :disabled="pagination.current_page === 1"
+                    class="px-3 py-1 text-xs border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Prev
+                  </button>
+                  <span class="px-3 py-1 text-xs font-medium text-gray-700">
+                    {{ pagination.current_page }}/{{ pagination.last_page }}
+                  </span>
+                  <button
+                    @click="fetchOrders(pagination.current_page + 1)"
+                    :disabled="pagination.current_page === pagination.last_page"
+                    class="px-3 py-1 text-xs border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
             </div>
@@ -165,13 +191,39 @@
                       </span>
                     </td>
                     <td class="px-6 py-4">
-                      <router-link :to="{ name: 'myOrderDetails', params: { id: order.id } }" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                      <router-link :to="{ name: 'myOrderDetails', params: { id: order.id } }" class="btn-primary px-4 py-2 text-xs">
                         View
                       </router-link>
                     </td>
                   </tr>
                 </tbody>
               </table>
+
+              <!-- Pagination -->
+              <div v-if="pagination.last_page > 1" class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                <p class="text-sm text-gray-500">
+                  Showing {{ (pagination.current_page - 1) * pagination.per_page + 1 }} to {{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }} of {{ pagination.total }} orders
+                </p>
+                <div class="flex gap-2">
+                  <button
+                    @click="fetchOrders(pagination.current_page - 1)"
+                    :disabled="pagination.current_page === 1"
+                    class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Previous
+                  </button>
+                  <span class="px-3 py-1 text-sm font-medium text-gray-700">
+                    Page {{ pagination.current_page }} of {{ pagination.last_page }}
+                  </span>
+                  <button
+                    @click="fetchOrders(pagination.current_page + 1)"
+                    :disabled="pagination.current_page === pagination.last_page"
+                    class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -252,11 +304,17 @@ const loading = ref(false)
 const successMessage = ref('')
 const orders = ref([])
 const ordersLoading = ref(false)
+const pagination = ref({
+  current_page: 1,
+  last_page: 1,
+  per_page: 10,
+  total: 0
+})
 
 const currentUser = computed(() => store.getters.userData)
 const cartCount = computed(() => store.getters.cartCount)
 const wishlistCount = computed(() => store.getters.wishlistCount)
-const ordersCount = computed(() => orders.value.length)
+const ordersCount = computed(() => pagination.value.total)
 
 // Initials helper
 const initials = computed(() => {
@@ -279,11 +337,19 @@ onMounted(() => {
   fetchOrders()
 })
 
-async function fetchOrders() {
+async function fetchOrders(page = 1) {
   ordersLoading.value = true
   try {
-    const { data } = await axiosClient.get('/my-orders')
+    const { data } = await axiosClient.get('/my-orders', { params: { page } })
     orders.value = data.data || data
+    if (data.current_page) {
+      pagination.value = {
+        current_page: data.current_page,
+        last_page: data.last_page,
+        per_page: data.per_page,
+        total: data.total
+      }
+    }
   } catch (error) {
     console.error('Error fetching orders:', error)
   } finally {

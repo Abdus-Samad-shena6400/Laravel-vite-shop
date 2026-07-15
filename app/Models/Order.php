@@ -6,23 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'order_number',
-        'subtotal',
-        'shipping',
-        'tax',
-        'discount',
-        'grand_total',
-        'payment_method',
-        'payment_status',
-        'order_status',
-        'notes',
-        'coupon_id',
-        'coupon_code',
-        'transaction_id',
-        'payment_proof',
-    ];
+        protected $fillable = [
+            'user_id',
+            'order_number',
+            'subtotal',
+            'shipping',
+            'tax',
+            'discount',
+            'grand_total',
+            'payment_method',
+            'payment_status',
+            'order_status',
+            'notes',
+            'coupon_id',
+            'coupon_code',
+            'transaction_id',
+            'payment_proof',
+            
+        ];
 
     protected $casts = [
         'subtotal' => 'decimal:2',
