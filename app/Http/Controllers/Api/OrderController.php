@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Notification;
 
 class OrderController extends Controller
 {
@@ -114,63 +115,68 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-   public function updateStatus(Request $request, Order $order)
-{
-    $validated = $request->validate([
-        'order_status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled'
-    ]);
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'order_status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled'
+        ]);
 
-    $order->order_status = $validated['order_status'];
+        $order->order_status = $validated['order_status'];
 
-    if ($validated['order_status'] == 'confirmed') {
-        $order->notification_status = 1;
-    }
-
-    if ($validated['order_status'] == 'delivered') {
-        $order->notification_status = 2;
-    }
-
-    if ($validated['order_status'] == 'cancelled') {
-        $order->notification_status = 3;
-    }
-
-    $order->save();
-
-    // Create live notification
-    if (in_array($validated['order_status'], [
-        'confirmed',
-        'delivered',
-        'cancelled'
-    ])) {
-
-        $message = match ($validated['order_status']) {
-            'confirmed' => "Your order {$order->order_number} has been confirmed.",
-            'delivered' => "Your order {$order->order_number} has been delivered successfully.",
-            'cancelled' => "Your order {$order->order_number} has been cancelled.",
-        };
-
-        // Check if similar notification already exists in the last hour
-        $existingNotification = \App\Models\Notification::where('user_id', $order->user_id)
-            ->where('title', 'Order Update')
-            ->where('message', $message)
-            ->where('created_at', '>', now()->subHour())
-            ->first();
-
-        if (!$existingNotification) {
-            \App\Models\Notification::create([
-                'user_id' => $order->user_id,
-                'title' => 'Order Update',
-                'message' => $message,
-                'is_read' => false,
-            ]);
+        if ($validated['order_status'] == 'confirmed') {
+            $order->notification_status = 1;
         }
-    }
 
-    return response()->json([
-        'message' => 'Order status updated successfully.',
-        'order' => $order
-    ]);
-}
+        if ($validated['order_status'] == 'delivered') {
+            $order->notification_status = 2;
+        }
+
+        if ($validated['order_status'] == 'cancelled') {
+            $order->notification_status = 3;
+        }
+
+        $order->save();
+
+        // Create live notification
+        if (in_array($validated['order_status'], [
+            'confirmed',
+            'delivered',
+            'cancelled'
+        ])) {
+            $message = match ($validated['order_status']) {
+                'confirmed' => "Your order {$order->order_number} has been confirmed.",
+                'delivered' => "Your order {$order->order_number} has been delivered successfully.",
+                'cancelled' => "Your order {$order->order_number} has been cancelled.",
+            };
+
+            // Check if similar notification already exists in the last hour
+            $existingNotification = \App\Models\Notification::where('user_id', $order->user_id)
+                ->where('title', 'Order Update')
+                ->where('message', $message)
+                ->where('created_at', '>', now()->subHour())
+                ->first();
+
+            if (!$existingNotification) {
+                $notification = Notification::create([
+                    'user_id' => $order->user_id,
+                    'title' => 'Order Update',
+                    'message' => $message,
+                    'is_read' => false,
+                ]);
+
+                broadcast(
+                    new \App\Events\OrderStatusChanged(
+                        $notification
+                    )
+                );
+            }
+        }
+
+        return response()->json([
+            'message' => 'Order status updated successfully.',
+            'order' => $order
+        ]);
+    }
 
     public function updatePaymentStatus(Request $request, Order $order)
     {

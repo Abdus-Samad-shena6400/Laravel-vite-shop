@@ -3,36 +3,36 @@
     <div class="container-standard">
       <div class="flex justify-between h-16 items-center">
         <!-- Logo and Main Navigation -->
-        <div class="flex items-center space-x-4 sm:space-x-8">
+        <div class="flex items-center space-x-6 sm:space-x-10 md:space-x-20 lg:space-x-28">
           <router-link :to="{ name: 'home' }"
             class="flex items-center gap-2 sm:gap-3 hover:scale-105 transition-transform duration-300">
-            <img src="@/assets/logo.png" alt="BLS Mart" class="h-20 w-20 sm:h-24 sm:w-24 object-contain" />
-            <span class="text-xl sm:text-2xl font-extrabold text-indigo-600 tracking-tight">BLS Mart</span>
+            <img src="@/assets/logo.png" alt="BLS Mart" class="h-12 w-12 sm:h-14 sm:w-14 md:h-14 md:w-14 lg:h-20 lg:w-24 object-contain" />
+            <span class="text-sm sm:text-base md:text-base lg:text-2xl font-extrabold text-indigo-600 tracking-tight">BLS Mart</span>
           </router-link>
           <div class="hidden md:flex space-x-1">
             <router-link :to="{ name: 'home' }"
-              class="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 relative group"
+              class="nav-link text-xs sm:text-xs md:text-sm lg:text-sm font-medium px-2 sm:px-3 md:px-4 py-2 rounded-lg transition-all duration-300 relative group"
               :class="isActiveRoute('home') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600'">
               <span class="relative z-10">Home</span>
               <span v-if="!isActiveRoute('home')"
                 class="absolute inset-0 bg-indigo-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             </router-link>
             <router-link :to="{ name: 'shop' }"
-              class="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 relative group"
+              class="nav-link text-xs sm:text-xs md:text-sm lg:text-sm font-medium px-2 sm:px-3 md:px-4 py-2 rounded-lg transition-all duration-300 relative group"
               :class="isActiveRoute('shop') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600'">
               <span class="relative z-10">Shop</span>
               <span v-if="!isActiveRoute('shop')"
                 class="absolute inset-0 bg-indigo-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             </router-link>
             <router-link :to="{ name: 'contact' }"
-              class="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 relative group"
+              class="nav-link text-xs sm:text-xs md:text-sm lg:text-sm font-medium px-2 sm:px-3 md:px-4 py-2 rounded-lg transition-all duration-300 relative group"
               :class="isActiveRoute('contact') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600'">
               <span class="relative z-10">Contact</span>
               <span v-if="!isActiveRoute('contact')"
                 class="absolute inset-0 bg-indigo-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             </router-link>
             <router-link :to="{ name: 'about' }"
-              class="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 relative group"
+              class="nav-link text-xs sm:text-xs md:text-sm lg:text-sm font-medium px-2 sm:px-3 md:px-4 py-2 rounded-lg transition-all duration-300 relative group"
               :class="isActiveRoute('about') ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600'">
               <span class="relative z-10">About</span>
               <span v-if="!isActiveRoute('about')"
@@ -276,11 +276,18 @@ const formatDate = (dateString) => {
 
 onMounted(() => {
   fetchNotifications()
+ 
+    const user = JSON.parse(
+        localStorage.getItem('USER')
+    )
 
-  setInterval(() => {
-    fetchNotifications()
-  }, 1000)
-})
+    if (user) {
+        window.Echo.leave(
+            `notifications.${user.id}`
+        )
+    }
+  })
+
 
 const clearAllNotifications = async () => {
   try {

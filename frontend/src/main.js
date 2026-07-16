@@ -5,6 +5,7 @@ import store from './store'
 import router from './router'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
+import './echo'
 
 const toastOptions = {
   timeout: 3000,
